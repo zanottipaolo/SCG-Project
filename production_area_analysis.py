@@ -53,7 +53,7 @@ final_production_areas = final_resource_usage.groupby(
 
 # Variances
 production_areas = budget_production_areas.merge(
-    final_production_areas, how='left', on='Area di produzione', suffixes=[' budget', ' consuntivo'])
+    final_production_areas, how='outer', on='Area di produzione', suffixes=[' budget', ' consuntivo']).fillna(0)
 
 production_areas['Δ'] = production_areas['Costo orario (€/h) consuntivo'] - \
     production_areas['Costo orario (€/h) budget']

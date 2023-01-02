@@ -35,7 +35,7 @@ scostamento_ricavi = {
     data["Mix standard"][0],
     data["Mix effettivo"][0],
     data["Consuntivo"][0],
-    }
+}
 
 st.subheader("Scostamento fatturato")
 st.bar_chart(scostamento_ricavi)
@@ -45,7 +45,7 @@ scostamento_costi = {
     data["Mix standard"][1],
     data["Mix effettivo"][1],
     data["Consuntivo"][1],
-    }
+}
 
 st.subheader("Scostamento costi MP e risorse")
 st.bar_chart(scostamento_costi)
@@ -55,13 +55,13 @@ scostamento_mol = {
     data["Mix standard"][4],
     data["Mix effettivo"][4],
     data["Consuntivo"][4],
-    }
+}
 
 st.subheader("Scostamento MOL")
 st.bar_chart(scostamento_mol)
 
 # Focus tipo di scostamento
-tab1, tab2, tabs3, tabs4 = st.tabs(["Scostamento volume", "Scostamento MIX", "Scostamento prezzo", "Scostamento costi"])
+tab1, tab2, tab3, tab4 = st.tabs(["Scostamento volume", "Scostamento MIX", "Scostamento prezzo", "Scostamento costi"])
 
 # Scostamento volume
 with tab1:
@@ -142,3 +142,122 @@ with tab2:
     fig_mix_consuntivo.update_traces(textposition='inside', textinfo='percent+label')
     
     st.plotly_chart(fig_mix_consuntivo, theme="streamlit")
+
+# Scostamento prezzo
+with tab3:
+    st.subheader("Scostamento Prezzo")
+    temp_scostamento_prezzo = pd.read_excel("export/scostamento_prezzo.xlsx")
+    scostamento_prezzo = pd.DataFrame({
+        'Mix effettivo':
+            temp_scostamento_prezzo['Mix effettivo'],
+        'Δ E-TE':
+            temp_scostamento_prezzo['Δ E-TE'],
+        'Mix tasso effettivo':
+            temp_scostamento_prezzo['Mix tasso effettivo'],
+        'Δ TE-C':
+            temp_scostamento_prezzo['Δ TE-C'],
+        'Consuntivo':
+            temp_scostamento_prezzo['Consuntivo'],
+    })
+
+    # TODO: dividere per valuta
+    st.line_chart({
+            temp_scostamento_prezzo['Mix effettivo'][0],
+            temp_scostamento_prezzo['Mix tasso effettivo'][0],
+            temp_scostamento_prezzo['Consuntivo'][0],
+    })
+
+    st.dataframe(scostamento_prezzo, use_container_width=True)
+
+# Scostamento costo
+with tab4:
+    st.subheader("Scostamento Costo")
+    temp_scostamento_costo_aree = pd.read_excel("export/production_areas.xlsx")
+
+    if st.checkbox("Mostra tutti i dati", key="costo_aree"):
+        st.dataframe(temp_scostamento_costo_aree)
+
+    # budget
+    scostamento_costo_aree_budget = pd.DataFrame({
+        'Area di prduzione':
+            temp_scostamento_costo_aree['Area di produzione'].values,
+        'Costo (€) budget':
+            temp_scostamento_costo_aree['Costo (€) budget'].values,
+    })
+    
+    scostamento_costo_aree_budget.loc[(scostamento_costo_aree_budget['Costo (€) budget']*100)/scostamento_costo_aree_budget['Costo (€) budget'].sum() < 1, 'Area di prduzione'] = 'Altre aree'
+    fig_costo_aree_budget = px.pie(scostamento_costo_aree_budget, values="Costo (€) budget", names="Area di prduzione", title="Impiego risorse nell aree di produzione - budget")
+    fig_costo_aree_budget.update_traces(textposition='inside', textinfo='percent+label')
+    
+    st.plotly_chart(fig_costo_aree_budget, theme="streamlit")
+
+    # consuntivo
+    scostamento_costo_aree_consuntivo = pd.DataFrame({
+        'Area di prduzione':
+            temp_scostamento_costo_aree['Area di produzione'].values,
+        'Costo (€) consuntivo':
+            temp_scostamento_costo_aree['Costo (€) consuntivo'].values,
+    })
+    
+    scostamento_costo_aree_consuntivo.loc[(scostamento_costo_aree_consuntivo['Costo (€) consuntivo']*100)/scostamento_costo_aree_consuntivo['Costo (€) consuntivo'].sum() < 1, 'Area di prduzione'] = 'Altre aree'
+    fig_costo_aree_consuntivo = px.pie(scostamento_costo_aree_consuntivo, values="Costo (€) consuntivo", names="Area di prduzione", title="Impiego risorse nell aree di produzione - budget")
+    fig_costo_aree_consuntivo.update_traces(textposition='inside', textinfo='percent+label')
+    
+    st.plotly_chart(fig_costo_aree_consuntivo, theme="streamlit")
+
+    # Focus risorse
+    st.subheader("Focus risorse")
+    temp_scostamento_risorse = pd.read_excel("export/scostamento_risorse.xlsx")
+
+    if st.checkbox("Mostra tutti i dati", key="costo_risorse"):
+        st.dataframe(temp_scostamento_risorse)
+
+    # tornitura (A20)
+    st.subheader("Tornitura (A20)")
+    area = "A20"
+    scostamento_tornitura = temp_scostamento_risorse.query(
+        "(`Area di produzione` == @area)"
+    )
+
+    if st.checkbox("Mostra tutti i dati", key="risorsa_tornitura"):
+        st.dataframe(scostamento_tornitura)
+
+    # fresatura (A30)
+    st.subheader("Fresatura (A30)")
+    area = "A30"
+    scostamento_fresatura = temp_scostamento_risorse.query(
+        "(`Area di produzione` == @area)"
+    )
+
+    if st.checkbox("Mostra tutti i dati", key="risorsa_fresatura"):
+        st.dataframe(scostamento_fresatura)
+
+    # montaggio (A40)
+    st.subheader("Montaggio (A40)")
+    area = "A40"
+    scostamento_montaggio = temp_scostamento_risorse.query(
+        "(`Area di produzione` == @area)"
+    )
+
+    if st.checkbox("Mostra tutti i dati", key="risorsa_montaggio"):
+        st.dataframe(scostamento_montaggio)
+
+    # saldatura (A11)
+    st.subheader("Saldatura (A11)")
+    area = "A11"
+    scostamento_saldatura = temp_scostamento_risorse.query(
+        "(`Area di produzione` == @area)"
+    )
+
+    if st.checkbox("Mostra tutti i dati", key="risorsa_saldatura"):
+        st.dataframe(scostamento_saldatura)
+
+    # pre. materiale (A10)
+    st.subheader("Prep. materiale/Taglio/ Sbavatura (A10)")
+    area = "A10"
+    scostamento_preparazione = temp_scostamento_risorse.query(
+        "(`Area di produzione` == @area)"
+    )
+
+    if st.checkbox("Mostra tutti i dati", key="risorsa_preparazione"):
+        st.dataframe(scostamento_preparazione)
