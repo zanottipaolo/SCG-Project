@@ -73,7 +73,7 @@ final_raw_materials_cost = (
 final_resources_cost = (final_items['Costo unitario risorse (€/u)'] *
                         final_items['Quantità']).sum()
 
-print(pd.DataFrame({
+scostamento_totale = pd.DataFrame({
     'Budget': [
         budget_price,
         budget_cost,
@@ -124,8 +124,10 @@ print(pd.DataFrame({
         final_resources_cost,
         final_price - final_cost
     ],
-}, index=['Prezzi', 'Costi totali', 'Costi MP', 'Costi risorse', 'MOL']))
+}, index=['Ricavi', 'Costi totali', 'Costi MP', 'Costi risorse', 'MOL'])
+
+scostamento_totale.to_excel("export/scostamento_totale.xlsx")
 
 
-print("Scostamento totale: " + str((final_price -
+print("Scostamento totale MOL: " + str((final_price -
       final_cost) - (budget_price - budget_cost)))

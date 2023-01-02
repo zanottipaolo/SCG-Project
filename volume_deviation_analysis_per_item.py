@@ -32,7 +32,7 @@ final_items['Costo totale MP consuntivo (€)'] = final_items['Costo unitario MP
 final_items['Costo totale risorse consuntivo (€)'] = final_items['Costo unitario risorse (€/u)'] * \
     final_items['Quantità consuntivo']
 
-print((budget_items[
+scostamento_volume_per_articolo = budget_items[
     ['Nr articolo',
      'Quantità budget',
      'Mix budget (%)',
@@ -47,4 +47,6 @@ print((budget_items[
      'Costo totale MP consuntivo (€)',
      'Costo totale risorse consuntivo (€)']
 ], how="outer", on=['Nr articolo']).sort_values(
-    by=['Quantità consuntivo'], ascending=False)))  # .to_excel('volume_deviation_analysis_per_item.xlsx'))
+    by=['Quantità consuntivo'], ascending=False)
+
+scostamento_volume_per_articolo.to_excel("export/scostamento_volume_mix_articolo.xlsx")

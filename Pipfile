@@ -7,6 +7,9 @@ name = "pypi"
 pandas = "*"
 openpyxl = "*"
 ipython = "*"
+streamlit = "*"
+requests = "*"
+plotly = "==5.11.0"
 
 [dev-packages]
 autopep8 = "*"
