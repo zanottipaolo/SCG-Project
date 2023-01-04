@@ -25,12 +25,12 @@ st.subheader('Risultati')
 if st.checkbox("Mostra tutti i dati", key="scostamento_totale"):
     st.dataframe(data.style.format(thousands="˙", decimal=",", precision="2"), use_container_width=True)
 
-st.metric("MOL", f"€ {data['Consuntivo'][4]:.2f}", f"€ {data['Consuntivo'][4] - data['Budget'][4]:.2f}")
+st.metric("MOL", f"€ {data['Consuntivo'][4]:,.2f}".replace(",", " ").replace(".", ","), "{:,.2f}".format(data['Consuntivo'][4] - data['Budget'][4]).replace(",", " ").replace(".", ","))
 
 col1, col2, col3 = st.columns(3)
-col1.metric("Ricavi", f"€ {data['Consuntivo'][0]:.2f}", f"€ {data['Consuntivo'][0] - data['Budget'][0]:.2f}")
-col2.metric("Costi MP", f"€ {data['Consuntivo'][2]:.2f}", f"€ {data['Consuntivo'][2] - data['Budget'][2]:.2f}")
-col3.metric("Costi risorse", f"€ {data['Consuntivo'][3]:.2f}", f" €{data['Consuntivo'][3] - data['Budget'][3]:.2f}")
+col1.metric("Ricavi", f"€ {data['Consuntivo'][0]:,.2f}".replace(",", " ").replace(".", ","), "{:,.2f}".format(data['Consuntivo'][0] - data['Budget'][0]).replace(",", " ").replace(".", ","))
+col2.metric("Costi MP", f"€ {data['Consuntivo'][2]:,.2f}".replace(",", " ").replace(".", ","), "{:,.2f}".format(data['Consuntivo'][2] - data['Budget'][2]).replace(",", " ").replace(".", ","))
+col3.metric("Costi risorse", f"€ {data['Consuntivo'][3]:,.2f}".replace(",", " ").replace(".", ","), "{:,.2f}".format(data['Consuntivo'][3] - data['Budget'][3]).replace(",", " ").replace(".", ","))
 
 st.write("#")
 
@@ -197,14 +197,14 @@ with tab3:
     # TODO: dividere per valuta
     st.bar_chart(scostamento_prezzo)
 
-    st.dataframe(temp_scostamento_prezzo, use_container_width=True)
+    st.dataframe(temp_scostamento_prezzo.style.format(thousands="˙", decimal=",", precision="2"), use_container_width=True)
 
 # Scostamento costo
 with tab4:
     temp_scostamento_costo_aree = pd.read_excel("export/production_areas.xlsx")
 
     if st.checkbox("Mostra tutti i dati", key="costo_aree"):
-        st.dataframe(temp_scostamento_costo_aree)
+        st.dataframe(temp_scostamento_costo_aree.style.format(thousands="˙", decimal=",", precision="2"))
 
     col1, col2 = st.columns(2)
     with col1:
@@ -251,7 +251,7 @@ with tab4:
     temp_scostamento_tornitura = temp_scostamento_tornitura.iloc[:, 2:]
 
     if st.checkbox("Mostra tutti i dati", key="risorsa_tornitura"):
-        st.dataframe(temp_scostamento_tornitura, use_container_width=True)
+        st.dataframe(temp_scostamento_tornitura.style.format(thousands="˙", decimal=",", precision="2"), use_container_width=True)
     
     scostamento_tornitura = pd.DataFrame(
         {
@@ -282,7 +282,7 @@ with tab4:
     temp_scostamento_fresatura = temp_scostamento_fresatura.iloc[:, 2:]
 
     if st.checkbox("Mostra tutti i dati", key="risorsa_fresatura"):
-        st.dataframe(temp_scostamento_fresatura, use_container_width=True)
+        st.dataframe(temp_scostamento_fresatura.style.format(thousands="˙", decimal=",", precision="2"), use_container_width=True)
     
     scostamento_fresatura = pd.DataFrame(
         {
@@ -313,7 +313,7 @@ with tab4:
     temp_scostamento_montaggio = temp_scostamento_montaggio.iloc[:, 2:]
 
     if st.checkbox("Mostra tutti i dati", key="risorsa_montaggio"):
-        st.dataframe(temp_scostamento_montaggio, use_container_width=True)
+        st.dataframe(temp_scostamento_montaggio.style.format(thousands="˙", decimal=",", precision="2"), use_container_width=True)
     
     scostamento_montaggio = pd.DataFrame(
         {
@@ -344,7 +344,7 @@ with tab4:
     temp_scostamento_saldatura = temp_scostamento_saldatura.iloc[:, 2:]
 
     if st.checkbox("Mostra tutti i dati", key="risorsa_saldatura"):
-        st.dataframe(temp_scostamento_saldatura, use_container_width=True)
+        st.dataframe(temp_scostamento_saldatura.style.format(thousands="˙", decimal=",", precision="2"), use_container_width=True)
     
     scostamento_saldatura = pd.DataFrame(
         {
@@ -375,7 +375,7 @@ with tab4:
     temp_scostamento_preparazione = temp_scostamento_preparazione.iloc[:, 2:]
 
     if st.checkbox("Mostra tutti i dati", key="risorsa_preparazione"):
-        st.dataframe(temp_scostamento_preparazione, use_container_width=True)
+        st.dataframe(temp_scostamento_preparazione.style.format(thousands="˙", decimal=",", precision="2"), use_container_width=True)
     
     scostamento_preparazione = pd.DataFrame(
         {
