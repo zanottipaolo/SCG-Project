@@ -92,27 +92,24 @@ final_mix = final_sales_with_exchange_rates[
 final_mix['Prezzo totale fattura (€)'] = final_mix['Prezzo unitario fattura (VL/u)'] / \
     final_mix['Tasso di cambio medio'] * final_mix['Quantità']
 
-print(pd.DataFrame({
+scostamento_prezzo = pd.DataFrame({
     'Mix effettivo': [
         actual_mix['Prezzo totale fattura (€)'].sum(),
     ],
-    'Δ E-TE': [
+    'Δ Tasso di cambio': [
         actual_exchange_mix['Prezzo totale fattura (€)'].sum(
         ) - actual_mix['Prezzo totale fattura (€)'].sum(),
     ],
     'Mix tasso effettivo': [
         actual_exchange_mix['Prezzo totale fattura (€)'].sum()
     ],
-    'Δ TE-C': [
+    'Δ Prezzo': [
         final_mix['Prezzo totale fattura (€)'].sum(
         ) - actual_exchange_mix['Prezzo totale fattura (€)'].sum(),
     ],
     'Consuntivo': [
         final_mix['Prezzo totale fattura (€)'].sum(),
     ],
-}, index=['Prezzi']))
+}, index=['Prezzi'])
 
-# Export
-# actual_mix.to_excel('actual_mix.xlsx')
-# actual_exchange_mix.to_excel('actual_exchange_mix.xlsx')
-# final_mix.to_excel('final_mix.xlsx')
+scostamento_prezzo.to_excel("export/scostamento_prezzo.xlsx")
