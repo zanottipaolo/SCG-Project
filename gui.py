@@ -90,7 +90,10 @@ scostamento_totale = scostamento_totale[1:]
 scostamento_totale.drop('Costi MP', inplace=True, axis=1)
 scostamento_totale.drop('Costi risorse', inplace=True, axis=1)
 
-st.bar_chart(scostamento_totale, use_container_width=True)
+scostamento_totale = scostamento_totale.reset_index()
+scostamento_totale = pd.melt(scostamento_totale, id_vars=['index'], var_name='Scostamenti', value_name='value')
+chart_scostamento_totale = px.bar(scostamento_totale, x="index", y="value", color="Scostamenti", barmode="group")
+st.plotly_chart(chart_scostamento_totale, theme="streamlit", use_container_width=True)
 
 st.write("#")
 
@@ -195,9 +198,11 @@ with tab3:
     scostamento_prezzo.drop("Δ TE-C", inplace=True, axis=0)
     
     # TODO: dividere per valuta
-    st.bar_chart(scostamento_prezzo)
+    chart_scostamento_prezzo = px.bar(scostamento_prezzo.reset_index(), x="index", y="Prezzi")
+    chart_scostamento_totale.update_xaxes(type='category')
+    st.plotly_chart(chart_scostamento_prezzo, theme="streamlit", use_container_width=True)
 
-    st.dataframe(temp_scostamento_prezzo.style.format(thousands="˙", decimal=",", precision="2"), use_container_width=True)
+    st.dataframe(temp_scostamento_prezzo.set_index('Unnamed: 0').style.format(thousands="˙", decimal=",", precision="2"), use_container_width=True)
 
 # Scostamento costo
 with tab4:
@@ -267,10 +272,12 @@ with tab4:
     ).transpose()
 
     scostamento_tornitura.columns = scostamento_tornitura.iloc[0]
-
     scostamento_tornitura = scostamento_tornitura[1:]
 
-    st.line_chart(scostamento_tornitura)
+    scostamento_tornitura = scostamento_tornitura.reset_index()
+    scostamento_tornitura = pd.melt(scostamento_tornitura, id_vars=['index'], var_name='risorse', value_name='value')
+    chart_scostamento_tornitura = px.bar(scostamento_tornitura, x="index", y="value", color="risorse", barmode="group")
+    st.plotly_chart(chart_scostamento_tornitura, theme="streamlit", use_container_width=True)
 
     # fresatura (A30)
     st.caption("Fresatura (A30)")
@@ -301,7 +308,10 @@ with tab4:
 
     scostamento_fresatura = scostamento_fresatura[1:]
 
-    st.line_chart(scostamento_fresatura)
+    scostamento_fresatura = scostamento_fresatura.reset_index()
+    scostamento_fresatura = pd.melt(scostamento_fresatura, id_vars=['index'], var_name='risorse', value_name='value')
+    chart_scostamento_fresatura = px.bar(scostamento_fresatura, x="index", y="value", color="risorse", barmode="group")
+    st.plotly_chart(chart_scostamento_fresatura, theme="streamlit", use_container_width=True)
 
     # montaggio (A40)
     st.caption("Montaggio (A40)")
@@ -329,10 +339,12 @@ with tab4:
     ).transpose()
 
     scostamento_montaggio.columns = scostamento_montaggio.iloc[0]
-
     scostamento_montaggio = scostamento_montaggio[1:]
 
-    st.line_chart(scostamento_montaggio)
+    scostamento_montaggio = scostamento_montaggio.reset_index()
+    scostamento_montaggio = pd.melt(scostamento_montaggio, id_vars=['index'], var_name='risorse', value_name='value')
+    chart_scostamento_montaggio = px.bar(scostamento_montaggio, x="index", y="value", color="risorse", barmode="group")
+    st.plotly_chart(chart_scostamento_montaggio, theme="streamlit", use_container_width=True)
 
     # saldatura (A11)
     st.caption("Saldatura (A11)")
@@ -360,10 +372,13 @@ with tab4:
     ).transpose()
 
     scostamento_saldatura.columns = scostamento_saldatura.iloc[0]
-
     scostamento_saldatura = scostamento_saldatura[1:]
 
-    st.line_chart(scostamento_saldatura)
+    scostamento_saldatura = scostamento_saldatura.reset_index()
+    scostamento_saldatura = pd.melt(scostamento_saldatura, id_vars=['index'], var_name='risorse', value_name='value')
+    chart_scostamento_saldatura = px.bar(scostamento_saldatura, x="index", y="value", color="risorse", barmode="group")
+    st.plotly_chart(chart_scostamento_saldatura, theme="streamlit", use_container_width=True)
+
 
     # pre. materiale (A10)
     st.caption("Prep. materiale/Taglio/ Sbavatura (A10)")
@@ -391,7 +406,9 @@ with tab4:
     ).transpose()
 
     scostamento_preparazione.columns = scostamento_preparazione.iloc[0]
-
     scostamento_preparazione = scostamento_preparazione[1:]
 
-    st.line_chart(scostamento_preparazione)
+    scostamento_preparazione = scostamento_preparazione.reset_index()
+    scostamento_preparazione = pd.melt(scostamento_preparazione, id_vars=['index'], var_name='risorse', value_name='value')
+    chart_scostamento_preparazione = px.bar(scostamento_preparazione, x="index", y="value", color="risorse", barmode="group")
+    st.plotly_chart(chart_scostamento_preparazione, theme="streamlit", use_container_width=True)

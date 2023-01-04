@@ -1,7 +1,5 @@
-# SCG-Project :moneybag:
-Work in progress :warning:
-
-Script Python to analyze variances data
+# SCG-Project :bar_chart:
+Script Python to analyze variances data, with GUI!
 
 ## Dependencies
 ## How to use it
