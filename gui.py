@@ -8,6 +8,15 @@ from variance_analysis import variance_analysis
 st.set_page_config(page_title='SCG - Analisi scostamenti',
                    layout='wide', page_icon=':bar_chart:')
 st.title('Analisi degli scostamenti :bar_chart:')
+with st.expander("Scopri di più"):
+    st.write('''
+    Progetto realizzato per l'esame di **Sistemi di Controllo di Gestione (A.A. 2022/2023) @ UniBg** da _Paolo Zanotti, Matteo Soldini, Silvia Bernardi e Francesco Foresti_. 
+    Il codice è disponibile su [Github](https://github.com/zanottipaolo/SCG-project).
+
+    Presi in input i dati dell'azienda (i nostri o quelli caricati dall'utente) viene eseguito uno script Python che, tramite Pandas,
+    crea dei file XLSX contenenti tutti gli elementi utili per l'analisi degli scostamenti. Questi file vengono poi elaborati tramite
+    Streamlit per estrapolare le informazioni più importanti da visualizzare qui nel sito.
+    ''')
 
 DATA_URL = ('export/scostamento_totale.xlsx')
 data = None
