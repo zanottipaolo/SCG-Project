@@ -7,7 +7,9 @@ from variance_analysis import variance_analysis
 
 st.set_page_config(page_title='SCG - Analisi scostamenti',
                    layout='wide', page_icon=':bar_chart:')
+
 st.title('Analisi degli scostamenti :bar_chart:')
+
 with st.expander("Scopri di più"):
     st.write('''
     Progetto realizzato per l'esame di **Sistemi di Controllo di Gestione (A.A. 2022/2023) @ UniBg** da _Paolo Zanotti, Matteo Soldini, Silvia Bernardi e Francesco Foresti_. 
@@ -37,7 +39,7 @@ required_files = [
 
 st.subheader('Caricamento file')
 uploaded_files = st.file_uploader(
-    "Carica i tuoi file xlsx:", type=".xlsx", accept_multiple_files=True)
+    "Carica i tuoi file xlsx (seguire il formato dei file già presenti nella cartella 'Files' su Github):", type=".xlsx", accept_multiple_files=True)
 
 for required_file in required_files:
     if not required_file in [uploaded_file.name for uploaded_file in uploaded_files]:
@@ -65,10 +67,10 @@ else:
 # Show results
 if result:
     # Resoconto analisi scostamento
-    st.subheader('Risultati')
+    st.subheader('Risultati a consuntivo')
 
     if st.checkbox("Mostra tutti i dati", key="scostamento_totale"):
-        st.dataframe(data.style.format(thousands="˙", decimal=",",
+        st.dataframe(data.set_index("Unnamed: 0").style.format(thousands="˙", decimal=",",
                                        precision="2"), use_container_width=True)
 
     st.metric("MOL", f"€ {data['Consuntivo'][4]:,.2f}".replace(",", " ").replace(".", ","), "{:,.2f}".format(
@@ -86,40 +88,6 @@ if result:
 
     # Analisi orizzontale
     st.subheader("Scostamenti orizzontali")
-
-    # col1, col2, col3 = st.columns(3)
-    # with col1:
-    #     scostamento_ricavi = {
-    #         data["Budget"][0],
-    #         data["Mix standard"][0],
-    #         data["Mix effettivo"][0],
-    #         data["Consuntivo"][0],
-    #     }
-
-    #     st.caption("Ricavi")
-    #     st.bar_chart(scostamento_ricavi)
-
-    # with col2:
-    #     scostamento_costi = {
-    #         data["Budget"][1],
-    #         data["Mix standard"][1],
-    #         data["Mix effettivo"][1],
-    #         data["Consuntivo"][1],
-    #     }
-
-    #     st.caption("Costi")
-    #     st.bar_chart(scostamento_costi)
-
-    # with col3:
-    #     scostamento_mol = {
-    #         data["Budget"][4],
-    #         data["Mix standard"][4],
-    #         data["Mix effettivo"][4],
-    #         data["Consuntivo"][4],
-    #     }
-
-    #     st.caption("MOL")
-    #     st.bar_chart(scostamento_mol)
 
     scostamento_totale = pd.DataFrame({
         "Scostamento":
@@ -140,11 +108,16 @@ if result:
     scostamento_totale.drop('Costi MP', inplace=True, axis=1)
     scostamento_totale.drop('Costi risorse', inplace=True, axis=1)
 
+    # Per il grafico non si riusciva ad usare i dati nel formato Wide di Plotly, allora tramite la funzione "melt()" 
+    # di Pandas sono stati trasformati nel formato Long
     scostamento_totale = scostamento_totale.reset_index()
     scostamento_totale = pd.melt(scostamento_totale, id_vars=[
         'index'], var_name='Scostamenti', value_name='value')
     chart_scostamento_totale = px.bar(
-        scostamento_totale, x="index", y="value", color="Scostamenti", barmode="group")
+        scostamento_totale, x="index", y="value", color="Scostamenti", barmode="group", labels={
+    "index": "",
+    "value": "€"
+})
     st.plotly_chart(chart_scostamento_totale,
                     theme="streamlit", use_container_width=True)
 
@@ -171,7 +144,7 @@ if result:
             })
 
             if st.checkbox("Mostra tutti i dati", key="volume_budget"):
-                st.dataframe(scostamento_volume_per_articolo_budget)
+                st.dataframe(scostamento_volume_per_articolo_budget.set_index("Articolo"))
 
             # mostra solo gli articoli maggiori dell'1% rispetto al totale
             scostamento_volume_per_articolo_budget.loc[(scostamento_volume_per_articolo_budget['qta budget'] * 100) /
@@ -194,7 +167,7 @@ if result:
             })
 
             if st.checkbox("Mostra tutti i dati", key="volume_consuntivo"):
-                st.dataframe(scostamento_volume_per_articolo_consuntivo)
+                st.dataframe(scostamento_volume_per_articolo_consuntivo.set_index("Articolo"))
 
             scostamento_volume_per_articolo_consuntivo.loc[(scostamento_volume_per_articolo_consuntivo['qta consuntivo'] * 100) /
                                                            scostamento_volume_per_articolo_consuntivo['qta consuntivo'].sum() < 1, 'Articolo'] = 'Altri articoli'
@@ -222,7 +195,7 @@ if result:
             })
 
             if st.checkbox("Mostra tutti i dati", key="mix_budget"):
-                st.dataframe(scostamento_mix_per_articolo_budget)
+                st.dataframe(scostamento_mix_per_articolo_budget.set_index("Articolo"))
 
             # mostra solo gli articoli maggiori dell'1% rispetto al totale
             scostamento_mix_per_articolo_budget.loc[(scostamento_mix_per_articolo_budget['MIX budget'] * 100) /
@@ -245,7 +218,7 @@ if result:
             })
 
             if st.checkbox("Mostra tutti i dati", key="mix_consuntivo"):
-                st.dataframe(scostamento_mix_per_articolo_consuntivo)
+                st.dataframe(scostamento_mix_per_articolo_consuntivo.set_index("Articolo"))
 
             scostamento_mix_per_articolo_consuntivo.loc[(scostamento_mix_per_articolo_consuntivo['MIX consuntivo'] * 100) /
                                                         scostamento_mix_per_articolo_consuntivo['MIX consuntivo'].sum() < 1, 'Articolo'] = 'Altri articoli'
@@ -265,14 +238,15 @@ if result:
         scostamento_prezzo = temp_scostamento_prezzo.transpose()
         scostamento_prezzo.columns = scostamento_prezzo.iloc[0]
         scostamento_prezzo = scostamento_prezzo[1:]
-
-        scostamento_prezzo.drop("Δ E-TE", inplace=True, axis=0)
-        scostamento_prezzo.drop("Δ TE-C", inplace=True, axis=0)
+        scostamento_prezzo.drop("Δ Tasso di cambio", inplace=True, axis=0)
+        scostamento_prezzo.drop("Δ Prezzo", inplace=True, axis=0)
 
         # TODO: dividere per valuta
         chart_scostamento_prezzo = px.bar(
-            scostamento_prezzo.reset_index(), x="index", y="Prezzi")
-        chart_scostamento_totale.update_xaxes(type='category')
+            scostamento_prezzo.reset_index(), x="index", y="Prezzi", labels={
+        "index": "",
+        "Prezzi": "Prezzi (€)"
+    })
         st.plotly_chart(chart_scostamento_prezzo,
                         theme="streamlit", use_container_width=True)
 
@@ -283,9 +257,10 @@ if result:
     with tab4:
         temp_scostamento_costo_aree = pd.read_excel(
             "export/production_areas.xlsx")
+        temp_scostamento_costo_aree.drop('Unnamed: 0', inplace=True, axis=1)
 
         if st.checkbox("Mostra tutti i dati", key="costo_aree"):
-            st.dataframe(temp_scostamento_costo_aree.style.format(
+            st.dataframe(temp_scostamento_costo_aree.set_index("Area di produzione").style.format(
                 thousands="˙", decimal=",", precision="2"))
 
         col1, col2 = st.columns(2)
@@ -342,7 +317,7 @@ if result:
         temp_scostamento_tornitura = temp_scostamento_tornitura.iloc[:, 2:]
 
         if st.checkbox("Mostra tutti i dati", key="risorsa_tornitura"):
-            st.dataframe(temp_scostamento_tornitura.style.format(
+            st.dataframe(temp_scostamento_tornitura.set_index("Risorsa").style.format(
                 thousands="˙", decimal=",", precision="2"), use_container_width=True)
 
         scostamento_tornitura = pd.DataFrame(
@@ -365,7 +340,10 @@ if result:
         scostamento_tornitura = pd.melt(scostamento_tornitura, id_vars=[
                                         'index'], var_name='risorse', value_name='value')
         chart_scostamento_tornitura = px.bar(
-            scostamento_tornitura, x="index", y="value", color="risorse", barmode="group")
+            scostamento_tornitura, x="index", y="value", color="risorse", barmode="group", labels={
+        "index": "",
+        "value": "€"
+    })
         st.plotly_chart(chart_scostamento_tornitura,
                         theme="streamlit", use_container_width=True)
 
@@ -379,7 +357,7 @@ if result:
         temp_scostamento_fresatura = temp_scostamento_fresatura.iloc[:, 2:]
 
         if st.checkbox("Mostra tutti i dati", key="risorsa_fresatura"):
-            st.dataframe(temp_scostamento_fresatura.style.format(
+            st.dataframe(temp_scostamento_fresatura.set_index("Risorsa").style.format(
                 thousands="˙", decimal=",", precision="2"), use_container_width=True)
 
         scostamento_fresatura = pd.DataFrame(
@@ -403,7 +381,10 @@ if result:
         scostamento_fresatura = pd.melt(scostamento_fresatura, id_vars=[
                                         'index'], var_name='risorse', value_name='value')
         chart_scostamento_fresatura = px.bar(
-            scostamento_fresatura, x="index", y="value", color="risorse", barmode="group")
+            scostamento_fresatura, x="index", y="value", color="risorse", barmode="group", labels={
+        "index": "",
+        "value": "€"
+    })
         st.plotly_chart(chart_scostamento_fresatura,
                         theme="streamlit", use_container_width=True)
 
@@ -417,7 +398,7 @@ if result:
         temp_scostamento_montaggio = temp_scostamento_montaggio.iloc[:, 2:]
 
         if st.checkbox("Mostra tutti i dati", key="risorsa_montaggio"):
-            st.dataframe(temp_scostamento_montaggio.style.format(
+            st.dataframe(temp_scostamento_montaggio.set_index("Risorsa").style.format(
                 thousands="˙", decimal=",", precision="2"), use_container_width=True)
 
         scostamento_montaggio = pd.DataFrame(
@@ -440,7 +421,10 @@ if result:
         scostamento_montaggio = pd.melt(scostamento_montaggio, id_vars=[
                                         'index'], var_name='risorse', value_name='value')
         chart_scostamento_montaggio = px.bar(
-            scostamento_montaggio, x="index", y="value", color="risorse", barmode="group")
+            scostamento_montaggio, x="index", y="value", color="risorse", barmode="group", labels={
+        "index": "",
+        "value": "€"
+    })
         st.plotly_chart(chart_scostamento_montaggio,
                         theme="streamlit", use_container_width=True)
 
@@ -454,7 +438,7 @@ if result:
         temp_scostamento_saldatura = temp_scostamento_saldatura.iloc[:, 2:]
 
         if st.checkbox("Mostra tutti i dati", key="risorsa_saldatura"):
-            st.dataframe(temp_scostamento_saldatura.style.format(
+            st.dataframe(temp_scostamento_saldatura.set_index("Risorsa").style.format(
                 thousands="˙", decimal=",", precision="2"), use_container_width=True)
 
         scostamento_saldatura = pd.DataFrame(
@@ -477,7 +461,10 @@ if result:
         scostamento_saldatura = pd.melt(scostamento_saldatura, id_vars=[
                                         'index'], var_name='risorse', value_name='value')
         chart_scostamento_saldatura = px.bar(
-            scostamento_saldatura, x="index", y="value", color="risorse", barmode="group")
+            scostamento_saldatura, x="index", y="value", color="risorse", barmode="group", labels={
+        "index": "",
+        "value": "€"
+    })
         st.plotly_chart(chart_scostamento_saldatura,
                         theme="streamlit", use_container_width=True)
 
@@ -491,7 +478,7 @@ if result:
         temp_scostamento_preparazione = temp_scostamento_preparazione.iloc[:, 2:]
 
         if st.checkbox("Mostra tutti i dati", key="risorsa_preparazione"):
-            st.dataframe(temp_scostamento_preparazione.style.format(
+            st.dataframe(temp_scostamento_preparazione.set_index("Risorsa").style.format(
                 thousands="˙", decimal=",", precision="2"), use_container_width=True)
 
         scostamento_preparazione = pd.DataFrame(
@@ -514,6 +501,9 @@ if result:
         scostamento_preparazione = pd.melt(scostamento_preparazione, id_vars=[
             'index'], var_name='risorse', value_name='value')
         chart_scostamento_preparazione = px.bar(
-            scostamento_preparazione, x="index", y="value", color="risorse", barmode="group")
+            scostamento_preparazione, x="index", y="value", color="risorse", barmode="group", labels={
+        "index": "",
+        "value": "€"
+    })
         st.plotly_chart(chart_scostamento_preparazione,
                         theme="streamlit", use_container_width=True)

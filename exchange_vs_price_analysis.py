@@ -96,14 +96,14 @@ scostamento_prezzo = pd.DataFrame({
     'Mix effettivo': [
         actual_mix['Prezzo totale fattura (€)'].sum(),
     ],
-    'Δ E-TE': [
+    'Δ Tasso di cambio': [
         actual_exchange_mix['Prezzo totale fattura (€)'].sum(
         ) - actual_mix['Prezzo totale fattura (€)'].sum(),
     ],
     'Mix tasso effettivo': [
         actual_exchange_mix['Prezzo totale fattura (€)'].sum()
     ],
-    'Δ TE-C': [
+    'Δ Prezzo': [
         final_mix['Prezzo totale fattura (€)'].sum(
         ) - actual_exchange_mix['Prezzo totale fattura (€)'].sum(),
     ],
