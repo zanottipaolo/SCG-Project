@@ -46,7 +46,7 @@ for required_file in required_files:
         missing_files.append(required_file)
 
 if len(missing_files) > 0:
-    st.subheader('File rimanenti')
+    st.subheader('File rimanenti da caricare')
     for missing_file in missing_files:
         st.text(missing_file)
 else:
