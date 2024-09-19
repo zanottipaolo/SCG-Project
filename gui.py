@@ -1,9 +1,13 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import numpy as np
 
 # Variance analysis script
 from variance_analysis import variance_analysis
+
+# module 'numpy' has no attribute 'bool8'
+np.bool = np.bool_
 
 st.set_page_config(page_title='SCG - Analisi scostamenti',
                    layout='centered', page_icon=':bar_chart:', initial_sidebar_state="expanded", menu_items={
