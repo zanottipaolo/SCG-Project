@@ -10,7 +10,7 @@ ipython = "*"
 streamlit = "*"
 requests = "*"
 plotly = "==5.11.0"
-numpy = "*"
+numpy = "==1.23.1"
 
 [dev-packages]
 autopep8 = "*"
